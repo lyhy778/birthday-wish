@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>🎂 生日快乐！</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 40%, #0f3460 100%);
+    overflow-x: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* ===== 星星背景 ===== */
+  .stars {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  }
+  .star {
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+    animation: twinkle var(--dur) ease-in-out infinite;
+    animation-delay: var(--delay);
+    opacity: 0;
+  }
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.2; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.5); }
+  }
+
+  /* ===== 气球 ===== */
+  .balloons { position: fixed; inset: 0; pointer-events: none; z-index: 1; }
+  .balloon {
+    position: absolute;
+    bottom: -200px;
+    animation: floatUp var(--dur) var(--delay) ease-in infinite;
+    font-size: var(--size);
+    opacity: 0.85;
+  }
+  @keyframes floatUp {
+    0% { transform: translateY(0) rotate(0deg) scale(1); opacity: 0.9; }
+    50% { transform: translateY(-50vh) rotate(var(--rot)) scale(1.1); }
+    100% { transform: translateY(-110vh) rotate(calc(var(--rot) * 2)) scale(0.8); opacity: 0; }
+  }
+
+  /* ===== 主卡片 ===== */
+  .card {
+    position: relative; z-index: 2;
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 28px;
+    padding: 40px 30px 36px;
+    width: 90vw; max-width: 400px;
+    text-align: center;
+    color: #fff;
+    animation: cardIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
+  }
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(40px) scale(0.9); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .cake {
+    font-size: 80px;
+    animation: bounce 1.2s ease-in-out infinite alternate;
+    line-height: 1;
+    margin-bottom: 8px;
+    filter: drop-shadow(0 8px 32px rgba(255,180,50,0.5));
+  }
+  @keyframes bounce {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-12px); }
+  }
+
+  .title {
+    font-size: 32px; font-weight: 700;
+    background: linear-gradient(135deg, #ffd700, #ffaa00, #ff6b6b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 6px;
+    letter-spacing: 2px;
+  }
+
+  .subtitle {
+    font-size: 14px; color: rgba(255,255,255,0.6);
+    margin-bottom: 28px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+  }
+
+  .message {
+    font-size: 16px; line-height: 1.9; color: rgba(255,255,255,0.85);
+    margin-bottom: 30px;
+    text-align: left;
+    padding: 0 8px;
+  }
+  .message .highlight {
+    color: #ffd700;
+    font-weight: 600;
+  }
+
+  /* ===== 倒计时/统计 ===== */
+  .counter {
+    display: flex; justify-content: center; gap: 16px;
+    margin-bottom: 30px;
+  }
+  .counter-item {
+    background: rgba(255,255,255,0.1);
+    border-radius: 14px; padding: 14px 16px; min-width: 68px;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  .counter-num {
+    font-size: 26px; font-weight: 700;
+    background: linear-gradient(135deg, #ffd700, #ffaa00);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .counter-label {
+    font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 2px;
+  }
+
+  .btn {
+    display: inline-block;
+    background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+    color: #fff; border: none; border-radius: 50px;
+    padding: 14px 40px; font-size: 16px; font-weight: 600;
+    cursor: pointer; letter-spacing: 1px;
+    transition: all 0.3s;
+    box-shadow: 0 8px 30px rgba(255,107,107,0.35);
+    text-decoration: none;
+  }
+  .btn:active {
+    transform: scale(0.95);
+    box-shadow: 0 4px 15px rgba(255,107,107,0.5);
+  }
+
+  /* ===== 彩带 ===== */
+  .confetti { position: fixed; pointer-events: none; z-index: 10; }
+  .confetti-piece {
+    position: absolute;
+    width: 10px; height: 10px;
+    animation: confettiFall var(--fall-dur) var(--fall-delay) linear forwards;
+    opacity: 0;
+  }
+  @keyframes confettiFall {
+    0% { transform: translateY(0) rotate(0deg) scale(1); opacity: 1; }
+    80% { opacity: 1; }
+    100% { transform: translateY(105vh) rotate(var(--spin)) scale(0.3); opacity: 0; }
+  }
+
+  /* ===== 点击蛋糕特效 ===== */
+  .spark {
+    position: fixed; pointer-events: none; z-index: 100;
+    animation: sparkUp 0.7s ease-out forwards;
+    font-size: 24px;
+  }
+  @keyframes sparkUp {
+    0% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0; transform: translateY(-120px) scale(0.3); }
+  }
+
+  /* ===== 音乐按钮 ===== */
+  .music-btn {
+    position: fixed; top: 20px; right: 20px; z-index: 20;
+    width: 44px; height: 44px; border-radius: 50%;
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #fff; font-size: 22px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s;
+  }
+  .music-btn:active { transform: scale(0.9); }
+  .music-btn.playing { animation: musicPulse 1s ease-in-out infinite; }
+  @keyframes musicPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255,255,255,0.4); }
+    50% { box-shadow: 0 0 0 12px rgba(255,255,255,0); }
+  }
+
+  /* ===== 来自信息 ===== */
+  .from {
+    margin-top: 20px;
+    font-size: 13px; color: rgba(255,255,255,0.4);
+    letter-spacing: 2px;
+  }
+
+  /* ===== 蜡烛火焰 ===== */
+  .flame {
+    position: absolute;
+    animation: flicker 0.3s ease-in-out infinite alternate;
+  }
+  @keyframes flicker {
+    0% { transform: scale(1) rotate(-2deg); }
+    100% { transform: scale(1.08) rotate(2deg); }
+  }
+</style>
+</head>
+<body>
+
+<!-- 星星背景 -->
+<div class="stars" id="stars"></div>
+
+<!-- 气球 -->
+<div class="balloons" id="balloons"></div>
+
+<!-- 彩带 -->
+<div class="confetti" id="confetti"></div>
+
+<!-- 音乐按钮 -->
+<button class="music-btn" id="musicBtn" onclick="toggleMusic()">🎵</button>
+
+<!-- 主卡片 -->
+<main class="card">
+  <div class="cake" id="cake" onclick="burstConfetti(event)">🎂</div>
+  <h1 class="title">生日快乐</h1>
+  <p class="subtitle">✦ Happy Birthday ✦</p>
+
+  <div class="message">
+    <p>亲爱的朋友：</p>
+    <p style="margin-top:10px;">
+      今天是特别的一天，因为<span class="highlight">你</span>来到了这个世界 🌍
+    </p>
+    <p style="margin-top:10px;">
+      愿你的每一天都充满<span class="highlight">阳光</span>和<span class="highlight">欢笑</span>，
+      愿所有美好都<span class="highlight">如期而至</span> ✨
+    </p>
+    <p style="margin-top:10px;">
+      祝你新的一岁，<br/>
+      <span class="highlight" style="font-size:18px;">心想事成，万事如意 🎉</span>
+    </p>
+  </div>
+
+  <div class="counter">
+    <div class="counter-item">
+      <div class="counter-num" id="daysAlive">🎂</div>
+      <div class="counter-label">美好日子</div>
+    </div>
+    <div class="counter-item">
+      <div class="counter-num" id="wishCount">∞</div>
+      <div class="counter-label">祝福</div>
+    </div>
+  </div>
+
+  <a class="btn" href="javascript:void(0)" onclick="burstConfetti(event)">🎁 点我领取好运</a>
+
+  <p class="from">—— 来自你的朋友 💝</p>
+</main>
+
+<script>
+  // ===== 生成星星 =====
+  (function() {
+    const container = document.getElementById('stars');
+    const colors = ['#ffd700','#fff','#ffebaa','#ffe4b5','#ffdead','#ffb6c1'];
+    for (let i = 0; i < 120; i++) {
+      const star = document.createElement('div');
+      star.className = 'star';
+      star.style.cssText = `
+        left: ${Math.random() * 100}%;
+        top: ${Math.random() * 100}%;
+        width: ${Math.random() * 3 + 1}px;
+        height: ${Math.random() * 3 + 1}px;
+        --dur: ${Math.random() * 3 + 2}s;
+        --delay: ${Math.random() * 4}s;
+        background: ${colors[Math.floor(Math.random() * colors.length)]};
+      `;
+      container.appendChild(star);
+    }
+  })();
+
+  // ===== 生成气球 =====
+  (function() {
+    const container = document.getElementById('balloons');
+    const balloonEmojis = ['🎈','🎈','🎈','🎈','🎈','🎈'];
+    for (let i = 0; i < 20; i++) {
+      const b = document.createElement('span');
+      b.className = 'balloon';
+      b.textContent = balloonEmojis[Math.floor(Math.random() * balloonEmojis.length)];
+      b.style.cssText = `
+        left: ${Math.random() * 90}%;
+        --dur: ${Math.random() * 8 + 10}s;
+        --delay: ${Math.random() * 12}s;
+        --size: ${Math.random() * 24 + 28}px;
+        --rot: ${(Math.random() - 0.5) * 40}deg;
+      `;
+      container.appendChild(b);
+    }
+  })();
+
+  // ===== 彩带爆炸 =====
+  function burstConfetti(e) {
+    const container = document.getElementById('confetti');
+    const colors = ['#ff6b6b','#ffd700','#48dbfb','#ff9ff3','#54a0ff','#5f27cd',
+                    '#01a3a4','#f368e0','#ff9f43','#00d2d3','#ff6348','#7bed9f'];
+    const shapes = ['●','■','▲','★','♦','❤','🎉','✨','🌟','💫','🎊','💖'];
+
+    // 点击位置
+    const cx = e.clientX || window.innerWidth / 2;
+    const cy = e.clientY || window.innerHeight / 2;
+
+    for (let i = 0; i < 60; i++) {
+      const piece = document.createElement('span');
+      piece.className = 'confetti-piece';
+      piece.textContent = shapes[Math.floor(Math.random() * shapes.length)];
+      piece.style.cssText = `
+        left: ${cx}px;
+        top: ${cy}px;
+        color: ${colors[Math.floor(Math.random() * colors.length)]};
+        font-size: ${Math.random() * 16 + 10}px;
+        --fall-dur: ${Math.random() * 2 + 2.5}s;
+        --fall-delay: ${Math.random() * 0.3}s;
+        --spin: ${(Math.random() - 0.5) * 1200}deg;
+        margin-left: ${(Math.random() - 0.5) * 400}px;
+      `;
+      container.appendChild(piece);
+      // 动画结束后移除
+      setTimeout(() => piece.remove(), 3000);
+    }
+
+    // 蛋糕抖动
+    const cake = document.getElementById('cake');
+    cake.style.animation = 'none';
+    cake.offsetHeight; // reflow
+    cake.style.animation = 'bounce 0.3s ease-in-out 3';
+    setTimeout(() => {
+      cake.style.animation = 'bounce 1.2s ease-in-out infinite alternate';
+    }, 900);
+  }
+
+  // ===== 音乐控制 =====
+  let musicPlaying = false;
+  function toggleMusic() {
+    const btn = document.getElementById('musicBtn');
+    musicPlaying = !musicPlaying;
+    if (musicPlaying) {
+      btn.textContent = '🎶';
+      btn.classList.add('playing');
+      // 简单音效提示（无需音频文件的方案）
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        // 播放一段简单的生日歌旋律
+        const notes = [
+          262,262,294,262,349,330, // 祝你生日快乐
+          262,262,294,262,392,349, // 祝你生日快乐
+          262,262,523,440,349,330,294, // 祝你生日快乐~
+          466,466,440,349,392,349  // 祝你生日快乐!
+        ];
+        const durations = [
+          0.3,0.15,0.45,0.45,0.45,0.9,
+          0.3,0.15,0.45,0.45,0.45,0.9,
+          0.3,0.15,0.45,0.45,0.3,0.15,0.45,
+          0.3,0.15,0.45,0.45,0.45,0.9
+        ];
+        let time = 0;
+        notes.forEach((freq, i) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.connect(gain); gain.connect(ctx.destination);
+          osc.frequency.value = freq;
+          osc.type = 'triangle';
+          gain.gain.setValueAtTime(0.15, time);
+          gain.gain.exponentialRampToValueAtTime(0.001, time + durations[i]);
+          osc.start(time); osc.stop(time + durations[i]);
+          time += durations[i];
+        });
+      } catch(_) {}
+    } else {
+      btn.textContent = '🎵';
+      btn.classList.remove('playing');
+    }
+  }
+
+  // ===== 页面加载时自动撒一次彩带 =====
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      burstConfetti({ clientX: window.innerWidth / 2, clientY: window.innerHeight / 2 - 100 });
+    }, 600);
+  });
+
+  // ===== 计算从某个日期到今天的天数 =====
+  // 这里设为朋友生日（你可以修改为实际的出生日期）
+  // 默认显示一个好看的随机大数
+  (function() {
+    const daysEl = document.getElementById('daysAlive');
+    // 假设朋友大约25岁，计算天数
+    const birth = new Date('2001-07-16'); // 你可以修改这个日期
+    const now = new Date();
+    const diffDays = Math.floor((now - birth) / (1000 * 60 * 60 * 24));
+    daysEl.textContent = diffDays.toLocaleString();
+  })();
+</script>
+</body>
+</html>
